@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Fetcher Tool MVP</title>
+  <style>
+.thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+* { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f4cdd, #2563eb);
+      color: #fff;
+      padding: 28px;
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.22);
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+    }
+    .hero p {
+      margin: 0;
+      line-height: 1.5;
+      opacity: 0.95;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 22px;
+      margin-top: 22px;
+    }
+    .panel, .content, .card, .history-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+    .panel {
+      padding: 18px;
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+    .content {
+      padding: 18px;
+    }
+    h2, h3, h4 { margin-top: 0; }
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 14px 0 8px;
+    }
+    textarea, input, select {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: #0f4cdd;
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #e8f0ff;
+      color: #0f4cdd;
+    }
+    .btn-muted {
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge {
+      background: #eef2ff;
+      color: #1d4ed8;
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .muted {
+      color: #6b7280;
+      font-size: 13px;
+    }
+    .notice {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .warning {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .keyword-group {
+      margin-bottom: 30px;
+    }
+    .keyword-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+    .thumb {
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 12px;
+      color: #1e3a8a;
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      font-size: 13px;
+      line-height: 1.4;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    .thumb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.05));
+      pointer-events: none;
+    }
+    .thumb span {
+      position: relative;
+      z-index: 1;
+      color: #fff;
+      font-weight: 700;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    }
+    .thumb.alt {
+      background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+    }
+    .thumb.alt::after { display: none; }
+    .thumb.alt span {
+      color: #4c1d95;
+      text-shadow: none;
+    }
+    .meta { padding: 12px; }
+    .meta p {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+    .mini-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .history-card {
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 34px 16px;
+      color: #6b7280;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      background: #f8fafc;
+    }
+    .small {
+      font-size: 12px;
+    }
+    .source-list {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .source-pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  border: none;
+  cursor: pointer;
+}
+
+.active-pill {
+  background: #0f4cdd;
+  color: #fff;
+}
+    .search-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .panel { position: static; }
+    }
+    @media (max-width: 640px) {
+      .row, .actions, .search-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Image Fetcher and Generator</h1>
+      <p>
+        Working front-end MVP for multi-keyword image search, all-sources mode, manual size,
+        fallback generation, output format selection, and saved history.
+      </p>
+    </section>
+
+    <div class="layout">
+      <aside class="panel">
+        <h2>Search Panel</h2>
+
+        <label for="keywords">Keywords</label>
+        <textarea id="keywords" placeholder="Enter keywords separated by commas or one per line">cat, modern office, mountain lake</textarea>
+<div class="actions">
+  <button class="btn-primary" id="fetchBtn" type="button">Fetch</button>
+  <button class="btn-secondary" id="generateBtn" type="button">Generate</button>
+  <button class="btn-muted" id="resetBtn" type="button">Reset</button>
+</div>
+        <div class="search-row">
+          <div>
+            <label for="categoryInput">Category</label>
+            <select id="categoryInput">
+              <option value="">All Categories</option>
+              <option value="backgrounds">Backgrounds</option>
+              <option value="fashion">Fashion</option>
+              <option value="nature">Nature</option>
+              <option value="science">Science</option>
+              <option value="education">Education</option>
+              <option value="feelings">Feelings</option>
+              <option value="health">Health</option>
+              <option value="people">People</option>
+              <option value="religion">Religion</option>
+              <option value="places">Places</option>
+              <option value="animals">Animals</option>
+              <option value="industry">Industry</option>
+              <option value="computer">Computer</option>
+              <option value="food">Food</option>
+              <option value="sports">Sports</option>
+              <option value="transportation">Transportation</option>
+              <option value="travel">Travel</option>
+              <option value="buildings">Buildings</option>
+              <option value="business">Business</option>
+              <option value="music">Music</option>
+            </select>
+          </div>
+          <div>
+            <label for="orientation">Orientation</label>
+            <select id="orientation">
+              <option value="all">Any</option>
+              <option value="horizontal">Landscape</option>
+              <option value="vertical">Portrait</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="width">Width</label>
+            <input id="width" type="number" value="1024" min="100" />
+          </div>
+          <div>
+            <label for="height">Height</label>
+            <input id="height" type="number" value="768" min="100" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="count">Images per keyword</label>
+            <input id="count" type="number" value="6" min="1" max="12" />
+          </div>
+          <div>
+            <label for="format">Output format</label>
+            <select id="format">
+              <option>JPG</option>
+              <option>PNG</option>
+              <option>WEBP</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="source">Image source</label>
+        <select id="source">
+          <option>Pixabay</option>
+          <option>All Sources</option>
+          <option>Pexels</option>
+        </select>
+
+        <label for="mode">Mode</label>
+        <select id="mode">
+          <option>Fetch Images</option>
+          <option>Generate Images</option>
+          <option>Auto Fallback</option>
+        </select>
+        
+
+
+        <div class="notice">
+          This version is ready to connect to a live API. Right now it uses your main UI and will work with app.js.
+        </div>
+        <div class="warning">
+          Keep only one script link at the bottom. Do not add extra inputs or buttons outside the HTML page.
+        </div>
+      </aside>
+
+      <main class="content">
+        <div class="topbar">
+          <div>
+            <h2 style="margin-bottom: 6px;">Results</h2>
+            <button class="btn-secondary small" id="downloadAllBtn" type="button">
+  Download All
+</button>
+            <div class="muted" id="resultsSummary">Enter keywords and click Fetch.</div>
+          </div>
+          <div class="badges">
+            <span class="badge">Multi-keyword</span>
+            <span class="badge">All sources mode</span>
+            <span class="badge">Manual size</span>
+            <span class="badge">History</span>
+          </div>
+        </div>
+
+        <div class="source-list" id="activeSources"></div>
+<div class="muted" id="sourceStatus" style="margin-top:8px;"></div>
+        <section id="resultsContainer">
+          <div class="empty-state">
+            <h3>No results yet</h3>
+            <p>Try keywords like nature, office, cat, business team, food, sunset.</p>
+          </div>
+        </section>
+
+        <section style="margin-top: 28px;">
+          <div class="topbar" style="margin-bottom: 10px;">
+            <div>
+              <h2 style="margin-bottom: 6px;">Recent History</h2>
+              <div class="muted">Saved in your browser.</div>
+            </div>
+            <button class="btn-muted small" id="clearHistoryBtn" type="button">Clear History</button>
+          </div>
+          <div class="history-grid" id="historyContainer"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

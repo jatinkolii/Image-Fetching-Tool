@@ -1,0 +1,15 @@
+.source-pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  border: none;
+  cursor: pointer;
+}
+
+.active-pill {
+  background: #0f4cdd;
+  color: #fff;
+}
